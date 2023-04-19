@@ -676,6 +676,66 @@
                 * Provides schema validation, mongodb does not prohibit you from inserting asymmetric data into 
                     collections where mongoose will help us validate data symmetry before insertion.  
                 
+                * connect mongoose to mongodb databse, 
+                    mongoose.connect('mongodb://127.0.0.1/todos').then(()=>{
+                        console.log("connection successful");
+                    }).catch((err)=>{
+                        console.log(err);
+                    });
+                    
+                    ** mongoose by default tries to connect to ipv6 address you need to specify ipv4 address 
+                        by '127.0.0.1' instead of using 'localhost'
+
+                mongoose crud: 
+                    1. create a schema 
+                        const mongoose = require('mongoose');
+
+                        const todoSchema = mongoose.Schema({
+                            title: {
+                                type: String, 
+                                required: true, 
+                            }, 
+                            description: String, 
+                            status: {
+                                type: String, 
+                                enum: ['active', 'inactive'],
+                            }, 
+                            date: {
+                                type: Date, 
+                                default: Date.now(),
+                            }, 
+                        });
+
+                    2. create a model from a schema 
+                        const Todo = mongoose.model("Todo", todoSchema);
+
+                    3. to create a new record make an instance of the model and call save on it 
+                        const newTodo = new Todo(req.body);
+                        try {
+                            await newTodo.save();
+                            res.status(200).json({ message: 'Todo was created successfully !' });
+                        
+                            } catch (err) {
+                            res.status(500).json({ message: 'There was a server side error !' });
+                        }
+
+                    4. use model.insertMany([{}, {}, {}]) to insert multiple records at once 
+
+                    5. use model.updateOne({filter: value}, {$set: {property: value}}) 
+                        to update a single record filtered by filter: value 
+
+                    6. if you need updated record on successful update use findeOneAndUpdate()
+                        let doc = await Character.findOneAndUpdate(filter, update); // not complete
+
+                    7. delete a record/document 
+                        await Todo.deleteOne({ _id: req.params.id });
+
+                    8. get a record by query parameters 
+                        const todo = await Todo.find({ _id: req.params.id }, { __v: 0 });
+                        
+                    9. or get all records from a collection 
+                    const todos = await Todo.find();
+
                 
 
         </pre>
