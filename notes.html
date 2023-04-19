@@ -592,8 +592,92 @@
             * Non Relational Database Management System 
             * query language used is NoSQL
             * tables are called collection, rows are called documents, columns are called fields;
-            
-            
+            * from mongo shesll => 
+            <h3>mongosh</h3>
+                1. show dbs => shows databases provided that they are not empty;
+
+                2. use db_name => creates datase;
+
+                3. db => returns database name; 
+
+                4. db.products.insertOne({
+                        name: 'iPhone 10', 
+                        price: 100000, 
+                        category: 'smartphone', 
+                        active: 'true'
+                    });
+                    => create 'products' collection and insert one record/document 
+
+                5. return all documents from a collection 
+                    db.collectionName.find()
+                    to prettify, db.collectionName.find().pretty();
+
+                6. insert multiple documents at once
+                db.products.insertMany(
+                        [
+                            {
+                                name: 'hp pavillion', 
+                                price: 150000, 
+                                category: 'laptop',
+                                active: true 
+                            }, 
+                        
+                            {
+                                name: 'honda civic', 
+                                price: 1500000, 
+                                category: 'car',
+                                active: true
+                            }, 
+                        
+                            {
+                                name: 'iPhone 14', 
+                                price: 150000, 
+                                category: 'smartphone',
+                                active: true
+                            }
+                        ]
+                    );
+                    
+
+                7. get a document by query parameter, 
+                    db.products.find({active: true, category: 'laptop'});
+
+                8. get columns/fields that you want by projection, 
+                    db.products.find({active: true, category: 'laptop'}, {active: 0, category: 0});
+                    => fields which value is 0 will not be present in the returned document 
+
+                9. get the first record 
+                    db.products.find({category: 'smartphone'}).limit(1);
+                    or, 
+                    db.products.findOne({category: 'smartphone'});
+
+                10. get the second record
+                    db.products.find({category: 'smartphone'}).limit(1).skip(1);
+
+                11. updateOne 
+                    db.products.updateOne({name: 'iPhone', active: true}, {$set: {price: 80000}});
+
+                12. updateMany 
+                    db.products.updateMany({}, {$set: {active: true}});
+                
+                13. delete one
+                    db.products.deleteOne({name: 'iPhone'});
+
+                14. delete many
+                    db.products.deleteMany({}); => deletes all 
+                    db.products.deleteMany({category: 'smartphone'}); => deletes all records of smartphone category
+
+
+            <h3>Mongoose</h3>
+                * is an ODM (Object Data Modeling) Library
+                * will be used to connect to mongodb databse and different databse operation 
+                * Models mongodb records/data as JavaScript Object
+                * Mongoose fascilitates relation between NoSQL database records 
+                * Provides schema validation, mongodb does not prohibit you from inserting asymmetric data into 
+                    collections where mongoose will help us validate data symmetry before insertion.  
+                
+                
+
         </pre>
     </main>
 </body>
