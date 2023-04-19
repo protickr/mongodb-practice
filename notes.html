@@ -737,7 +737,39 @@
                     const todos = await Todo.find();
 
                 
+            <h3>Mongoose instance methods, static and query helpers</h3>
+                * add instance methods 
+                    todoSchema.methods = {
+                        findActive: () => {
+                            return mongoose.model("Todo").find({status: 'active'});
+                        }
+                    };
 
+                * use instance methods 
+                    const todoModelObj = new Todo();
+                    const todos = await todoModelObj.findActive();
+
+
+                * static methods
+                    todoSchema.statics = {
+                        findByJS: function () {
+                            return this.find({title: /js/i});
+                        }
+                    };
+
+                * use static method
+                    const todos = await Todo.findByJS();
+
+                * query helper 
+                    todoSchema.statics = {
+                        byLanguage: function (language) {
+                            return this.find({title: new RegExp(language, 'i')});
+                        }
+                    };
+
+                * use query helpers
+                    const todos = await Todo.find().byLanguage("js");
+                                        
         </pre>
     </main>
 </body>
