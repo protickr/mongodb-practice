@@ -3,9 +3,11 @@ const mongoose = require('mongoose');
 const todoSchema = require('../schemas/todoSchema');
 const router = express.Router();
 const Todo = mongoose.model('Todo', todoSchema);
+const checkLogin = require('../middlewares/checkLogin');
 
 // return all todos
-router.get('/', async (req, res) => {
+router.get('/', checkLogin, async (req, res) => {
+  console.log(req.username, req.userId);
   try {
     const todos = await Todo.find({ status: 'active' }, { __v: 0 });
     res.status(200).json({ data: todos });

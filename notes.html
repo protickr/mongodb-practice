@@ -588,11 +588,83 @@
                         }
                       });
 
+        <h2>JSON Web Token - JWT</h2>
+            * user authorization technique 
+            
+            * was created to fascilitate secure communication between two parties according to RFC 7519
+            
+            * another authorization strategy is session token 
+            
+            * authorization techniques were invented due to stateless behaviour of http protocol
+                but for a dynamic website you have to provide user with different resources according to 
+                their request and authority 
+            
+            * best suited for microservice architecture application
+            
+            * json object is encrypted with base64 encoding and signed by the server with a secret key 
+                header.payload.signature; each segment is a json object
+                
+            * the jwt token is encrypted not for security but for easy usability, the payload data can easily 
+                be decoded in any online cryptography service, so do not store sensitive information in jwt token
+                instead only store user role name and such
+
+            * jwt token - user identity 
+
+            * jwt token can not be invalidated unless it expires or blacklisted 
+
+            
+            * how to implement jwt for authorization in express 
+                1. verify username and password 
+                    const user = await User.find({ username: req.body.username });
+                    if (user && user.length > 0) {
+                        const isValidPassword = await bcrypt.compare(req.body.password, user[0].password);
+                        if (!isValidPassword)
+                            res.status(401).json({ error: `authentication failed` });
+                    
+                2. generate token
+                        const token = jwt.sign({username: user[0].username, userId: user[0]._id, }, process.env.JWT_SECRET, {
+                            expiresIn: '1h', 
+                        }); 
+                    
+                        res.status(200).json({
+                            access_token: token,
+                            message: 'login successful !'
+                        });
+                    
+                    }
+
+                3. set jwt token with request ( standard is to send it in header )
+                    Authorization: Bearer jwt_token
+
+                4. receive token, verify signature and retrieve user details 
+                    const jwt = require('jsonwebtoken');
+
+                    const checkLogin = (req, res, next) => {
+                        try{
+                            const { authorization } = req.headers;
+                            const token = authorization.split(" ")[1];
+                            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                            const {username, userId} = decoded;
+                            req.username = username;
+                            req.userId = userId;
+                            next();
+                    
+                        }catch (err){
+                            next(new Error("Authentication failure"));
+                        }
+                    };
+                    
+                    module.exports = checkLogin; 
+
+                5. use the authoriztion function as middleware in any route that requires authorization
+                    router.get('/', checkLogin, async (req, res) => {});
+
+
         <h2>MongoDB</h2>
             * Non Relational Database Management System 
             * query language used is NoSQL
             * tables are called collection, rows are called documents, columns are called fields;
-            * from mongo shesll => 
+            * from mongo shell => 
             <h3>mongosh</h3>
                 1. show dbs => shows databases provided that they are not empty;
 
@@ -769,7 +841,9 @@
 
                 * use query helpers
                     const todos = await Todo.find().byLanguage("js");
-                                        
+
+            <h3>Populate relation data</h3>
+                
         </pre>
     </main>
 </body>
