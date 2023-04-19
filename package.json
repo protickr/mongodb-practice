@@ -1,0 +1,27 @@
+{
+  "name": "mongodb-practice",
+  "version": "1.0.0",
+  "description": "mongodb practice",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/protickr/mongodb-practice.git"
+  },
+  "keywords": [
+    "mongodb",
+    "practice"
+  ],
+  "author": "Protick Roy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/protickr/mongodb-practice/issues"
+  },
+  "homepage": "https://github.com/protickr/mongodb-practice#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
