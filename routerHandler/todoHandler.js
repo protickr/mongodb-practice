@@ -1,15 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const todoSchema = require('../schemas/todoSchema');
+const userSchema = require('../schemas/userSchema');
 const router = express.Router();
 const Todo = mongoose.model('Todo', todoSchema);
+const User = mongoose.model('User', userSchema);
 const checkLogin = require('../middlewares/checkLogin');
 
-// return all todos
+// return all todos with user details
 router.get('/', checkLogin, async (req, res) => {
-  console.log(req.username, req.userId);
   try {
-    const todos = await Todo.find({ status: 'active' }, { __v: 0 });
+    const todos = await Todo.find({ status: 'active' }, { __v: 0 }).populate('user', 'name username -_id');
     res.status(200).json({ data: todos });
   } catch (err) {
     res.status(500).json({ message: 'There was a server side error !' });
@@ -17,7 +18,7 @@ router.get('/', checkLogin, async (req, res) => {
 });
 
 // return all todos
-router.get('/active', async (req, res) => {
+router.get('/active', checkLogin, async (req, res) => {
   try {
     const todoModelObj = new Todo();
     const todos = await todoModelObj.findActive();
@@ -65,17 +66,23 @@ router.get('/:id', async (req, res) => {
 });
 
 // post a todo
-router.post('/', async (req, res) => {
-  const newTodo = new Todo(req.body);
+router.post('/', checkLogin, async (req, res) => {
   try {
-    await newTodo.save();
+    const userId = req.userId;
+    const newTodo = new Todo({
+      ...req.body,
+      user: userId
+    });
+
+    const newTodoRes = await newTodo.save();
+    await User.updateOne({_id: userId}, {$push:{todos: newTodoRes._id}});
     res.status(200).json({ message: 'Todo was created successfully !' });
   } catch (err) {
     res.status(500).json({ message: 'There was a server side error !' });
   }
 });
 
-// post single todo
+// post multiple todo
 router.post('/multiple', async (req, res) => {
   try {
     await Todo.insertMany(req.body);
@@ -101,7 +108,7 @@ router.put('/:id', async (req, res) => {
 // update single todo
 router.delete('/:id', async (req, res) => {
   try {
-    await Todo.deleteOne({ _id: req.params.id });
+    await Todo.deleteOne({ _id: req.params.id }); 
     res.status(200).json({ message: 'Todos was deleted successfully !' });
   } catch (err) {
     res.status(500).json({ message: 'There was a server side error !' });

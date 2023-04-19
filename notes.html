@@ -843,7 +843,32 @@
                     const todos = await Todo.find().byLanguage("js");
 
             <h3>Populate relation data</h3>
-                
+                * to add one to one relationship from todo collection to user collection, add a column named user
+                    user: {
+                        type: mongoose.Types.ObjectId, 
+                        ref: "User"
+                    }
+
+                    populate user column with the userId, 
+                        user: userId, 
+
+                retrive data from one to one relationship 
+                    const todos = await Todo.find({ status: 'active' }, { __v: 0 }).populate('user', 'name username -_id');
+
+
+                * to add one to many relation from user to todos, add a column named todos
+                    todos: [{
+                        type: mongoose.Types.ObjectId, 
+                        ref: 'Todo'
+                    }]
+
+                    update user collection's todos field/column (which is an array) when a user creates a new todo, 
+                        const newTodoRes = await newTodo.save();
+                        await User.updateOne({_id: userId}, {$push:{todos: newTodoRes._id}});
+
+                    retrive todos data from one to many relation when retriving data for an user, 
+                        const allUsers = await User.find().populate("todos");
+
         </pre>
     </main>
 </body>
